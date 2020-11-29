@@ -2,22 +2,6 @@
 
 A simple microservice based application to show the simplicity of Spring Cloud, and for my personal reference for setting up a skeleton Spring Cloud project.
 
-# Build & Run
-
-```bash
-cd discovery-service && ./mvnw clean install \
-&& cd ../api-gateway && ./mvnw clean install \
-&& cd ../config-server && ./mvnw clean install \
-&& cd ../microservice-one  && ./mvnw clean install \
-&& cd ../microservice-two && ./mvnw clean install
-
-# either
-docker-compose up 
-
-# or
-docker stack deploy
-```
-
 # Components
 
 * microservice-one
@@ -36,3 +20,22 @@ docker stack deploy
 
 
 ![diagram.png](diagram.png)
+
+# Build & Run
+
+```bash
+cd discovery-service && ./mvnw clean install \
+&& cd ../api-gateway && ./mvnw clean install \
+&& cd ../config-server && ./mvnw clean install \
+&& cd ../microservice-one  && ./mvnw clean install \
+&& cd ../microservice-two && ./mvnw clean install
+
+# either
+docker-compose up --build
+```
+
+This will start the components listed above (with multiple instances of the dummy microservices).
+
+You can access the microservices via Zuul gateway: http://localhost:8011/microservice-one or http://localhost:8011/microservice-two (refresh to view Ribbon load balancer distributing load between instances).
+
+Or view the Eureka dashboard: http://localhost:8010
