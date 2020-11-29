@@ -2,7 +2,23 @@
 
 A simple microservice based application to show the simplicity of Spring Cloud, and for my personal reference for setting up a skeleton Spring Cloud project.
 
-Components:
+# Build & Run
+
+```bash
+cd discovery-service && ./mvnw clean install \
+&& cd ../api-gateway && ./mvnw clean install \
+&& cd ../config-server && ./mvnw clean install \
+&& cd ../microservice-one  && ./mvnw clean install \
+&& cd ../microservice-two && ./mvnw clean install
+
+# either
+docker-compose up 
+
+# or
+docker stack deploy
+```
+
+# Components
 
 * microservice-one
     * dummy microservice

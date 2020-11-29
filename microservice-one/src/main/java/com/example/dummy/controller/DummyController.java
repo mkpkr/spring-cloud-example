@@ -13,7 +13,7 @@ public class DummyController {
 	
 	@Autowired
 	public DummyController(@Value("${spring.application.name}") String applicationName, 
-			               @Value("${application.instance-id}") String instanceId) {
+			               @Value("${eureka.instance.instance-id}") String instanceId) {
 		this.applicationName = applicationName;
 		this.instanceId = instanceId;
 	}

@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  discovery-service:
+    image: spring-cloud-example-discovery-service:latest
+    build: ./discovery-service
+    environment:
+      - DISCOVERY_SERVICE_HOST=${DISCOVERY_SERVICE_HOST}
+      - DISCOVERY_SERVICE_PORT=${DISCOVERY_SERVICE_PORT}
+      - DISCOVERY_SERVICE_USER_NAME=${DISCOVERY_SERVICE_USER_NAME}
+      - DISCOVERY_SERVICE_PASSWORD=${DISCOVERY_SERVICE_PASSWORD}
+    ports:
+      - ${DISCOVERY_SERVICE_PORT}:${DISCOVERY_SERVICE_PORT}
+  
+  api-gateway:
+    image: spring-cloud-example-api-gateway:latest
+    build: ./api-gateway
+    depends_on:
+      - discovery-service
+    environment:
+      - API_GATEWAY_PORT=${API_GATEWAY_PORT}
+      - DISCOVERY_SERVICE_USER_NAME=${DISCOVERY_SERVICE_USER_NAME}
+      - DISCOVERY_SERVICE_PASSWORD=${DISCOVERY_SERVICE_PASSWORD}
+      - DISCOVERY_SERVICE_HOST=${DISCOVERY_SERVICE_HOST}
+      - DISCOVERY_SERVICE_PORT=${DISCOVERY_SERVICE_PORT}
+    ports:
+      - ${API_GATEWAY_PORT}:${API_GATEWAY_PORT}
+
+  microservice-one:
+    image: spring-cloud-example-microservice-one:latest
+    build: ./microservice-one
+    scale: 3
+    depends_on:
+      - api-gateway
+    environment:
+      - DISCOVERY_SERVICE_USER_NAME=${DISCOVERY_SERVICE_USER_NAME}
+      - DISCOVERY_SERVICE_PASSWORD=${DISCOVERY_SERVICE_PASSWORD}
+      - DISCOVERY_SERVICE_HOST=${DISCOVERY_SERVICE_HOST}
+      - DISCOVERY_SERVICE_PORT=${DISCOVERY_SERVICE_PORT}
+ 
+  microservice-two:
+    image: spring-cloud-example-microservice-two:latest
+    build: ./microservice-two
+    scale: 2
+    depends_on:
+      - api-gateway
+    environment:
+      - DISCOVERY_SERVICE_USER_NAME=${DISCOVERY_SERVICE_USER_NAME}
+      - DISCOVERY_SERVICE_PASSWORD=${DISCOVERY_SERVICE_PASSWORD}
+      - DISCOVERY_SERVICE_HOST=${DISCOVERY_SERVICE_HOST}
+      - DISCOVERY_SERVICE_PORT=${DISCOVERY_SERVICE_PORT}
