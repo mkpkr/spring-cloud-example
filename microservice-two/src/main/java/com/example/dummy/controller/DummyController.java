@@ -19,9 +19,15 @@ public class DummyController {
 	}
 
 	@GetMapping("/")
-	public String dummyEndpoint() {
-		return "Welcome to " + applicationName + ", you are on instance " + instanceId;
-		
+	public String hello() {
+		return String.format("Welcome to %s, you are on instance %s", 
+				applicationName, 
+				instanceId);
+	}
+	
+	@GetMapping("/instance")
+	public String instance() {
+		return instanceId;
 	}
 
 }
