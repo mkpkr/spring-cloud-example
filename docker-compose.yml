@@ -1,30 +1,34 @@
 version: '3.8'
 
 services:
+
+  config-server:
+    image: spring-cloud-example-config-server:latest
+    build: ./config-server
+    environment: 
+      - CONFIG_SERVER_GIT_REPOSITORY=${CONFIG_SERVER_GIT_REPOSITORY}
+
   discovery-service:
     image: spring-cloud-example-discovery-service:latest
     build: ./discovery-service
+    depends_on: 
+      - config-server
     environment:
-      - DISCOVERY_SERVICE_HOST=${DISCOVERY_SERVICE_HOST}
-      - DISCOVERY_SERVICE_PORT=${DISCOVERY_SERVICE_PORT}
-      - DISCOVERY_SERVICE_USER_NAME=${DISCOVERY_SERVICE_USER_NAME}
-      - DISCOVERY_SERVICE_PASSWORD=${DISCOVERY_SERVICE_PASSWORD}
+      - WAIT_FOR=${CONFIG_SERVER_HOST}:8080
+      - CONFIG_SERVER_URL=http://${CONFIG_SERVER_HOST}:8080
     ports:
-      - ${DISCOVERY_SERVICE_PORT}:${DISCOVERY_SERVICE_PORT}
-  
+      - ${DISCOVERY_SERVICE_EXTERNAL_PORT}:8080
+
   api-gateway:
     image: spring-cloud-example-api-gateway:latest
     build: ./api-gateway
     depends_on:
       - discovery-service
     environment:
-      - API_GATEWAY_PORT=${API_GATEWAY_PORT}
-      - DISCOVERY_SERVICE_USER_NAME=${DISCOVERY_SERVICE_USER_NAME}
-      - DISCOVERY_SERVICE_PASSWORD=${DISCOVERY_SERVICE_PASSWORD}
-      - DISCOVERY_SERVICE_HOST=${DISCOVERY_SERVICE_HOST}
-      - DISCOVERY_SERVICE_PORT=${DISCOVERY_SERVICE_PORT}
+      - WAIT_FOR=${DISCOVERY_SERVICE_HOST}:8080
+      - CONFIG_SERVER_URL=http://${CONFIG_SERVER_HOST}:8080
     ports:
-      - ${API_GATEWAY_PORT}:${API_GATEWAY_PORT}
+      - ${API_GATEWAY_EXTERNAL_PORT}:8080
 
   microservice-one:
     image: spring-cloud-example-microservice-one:latest
@@ -33,10 +37,8 @@ services:
     depends_on:
       - api-gateway
     environment:
-      - DISCOVERY_SERVICE_USER_NAME=${DISCOVERY_SERVICE_USER_NAME}
-      - DISCOVERY_SERVICE_PASSWORD=${DISCOVERY_SERVICE_PASSWORD}
-      - DISCOVERY_SERVICE_HOST=${DISCOVERY_SERVICE_HOST}
-      - DISCOVERY_SERVICE_PORT=${DISCOVERY_SERVICE_PORT}
+      - WAIT_FOR=${API_GATEWAY_HOST}:8080
+      - CONFIG_SERVER_URL=http://${CONFIG_SERVER_HOST}:8080
  
   microservice-two:
     image: spring-cloud-example-microservice-two:latest
@@ -45,7 +47,5 @@ services:
     depends_on:
       - api-gateway
     environment:
-      - DISCOVERY_SERVICE_USER_NAME=${DISCOVERY_SERVICE_USER_NAME}
-      - DISCOVERY_SERVICE_PASSWORD=${DISCOVERY_SERVICE_PASSWORD}
-      - DISCOVERY_SERVICE_HOST=${DISCOVERY_SERVICE_HOST}
-      - DISCOVERY_SERVICE_PORT=${DISCOVERY_SERVICE_PORT}
+      - WAIT_FOR=${API_GATEWAY_HOST}:8080
+      - CONFIG_SERVER_URL=http://${CONFIG_SERVER_HOST}:8080
